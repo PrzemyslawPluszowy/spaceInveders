@@ -5,12 +5,19 @@ class Game {
   #htmlElements = {
     spaceship: document.querySelector("[data-spaceship]"),
     conteiner: document.querySelector("[data-conteiner]"),
+    score: document.querySelector("[data-score]"),
+    lives: document.querySelector("[data-lives]"),
+    modal: document.querySelector("[data-modal]"),
+    scoreModal: document.querySelector("[data-score-modal]"),
+    button: document.querySelector("[data-button]"),
   };
 
   #ship = new Spaceship(
     this.#htmlElements.spaceship,
     this.#htmlElements.conteiner
   );
+  #lives = null;
+  #score = null;
   #enemies = [];
   #enemiesInterval = null;
   #checkPosInterval = null;
@@ -19,20 +26,35 @@ class Game {
   init() {
     this.#ship.init();
     this.#newGame();
+    this.#htmlElements.button.addEventListener("click", () => this.#newGame());
   }
 
   #newGame() {
-    this.#enemiesInterval = 5;
+    this.#htmlElements.modal.classList.add("hide");
+    this.#enemiesInterval = 15;
     this.#createEnemyInterval = setInterval(() => {
       this.#randomNewEnemy();
     }, 1000);
+    this.#lives = 3;
+    this.#score = 0;
 
     (this.#checkPosInterval = setInterval(() => this.#checkPosition())), 1;
   }
 
+  #endGame() {
+    this.#htmlElements.modal.classList.remove("hide");
+    this.#htmlElements.scoreModal.textContent = `You Lose! Score: ${
+      this.#score
+    }`;
+    this.#enemies.forEach((enemy) => enemy.explode());
+    this.#enemies.lenght = 0;
+    clearInterval(this.#createEnemyInterval);
+    clearInterval(this.#checkPosInterval);
+  }
+
   #randomNewEnemy() {
-    const randomNumber = Math.floor(Math.random() * 2) + 1;
-    randomNumber % 2
+    const randomNumber = Math.floor(Math.random() * 5) + 1;
+    randomNumber % 5
       ? this.#createNewEnemy(
           this.#htmlElements.conteiner,
           "enemy",
@@ -69,6 +91,7 @@ class Game {
         missileArr.splice(index, 1);
         console.log(missileArr);
       }
+
       this.#enemies.forEach((enemy, index, enemyArr) => {
         const enemyPos = {
           top: enemy.element.offsetTop,
@@ -84,18 +107,42 @@ class Game {
         ) {
           missile.remove();
           missileArr.splice(index, 1);
+          this.#updateScore();
           enemy.hit();
           if (enemy.lives === 0) {
             enemyArr.splice(index, 1);
-            // enemy.remove();
           }
         }
+
         if (enemyPos.top > window.innerHeight) {
           enemy.remove();
           enemyArr.splice(index, 1);
+          this.#updateLives();
         }
       });
     });
+  }
+  #updateLives() {
+    this.#lives--;
+    this.#updateLivesText();
+    this.#htmlElements.conteiner.classList.add("hit");
+    setTimeout(() => this.#htmlElements.conteiner.classList.remove("hit"), 500);
+    if (this.#lives === 0) this.#endGame();
+  }
+
+  #updateScore() {
+    this.#score++;
+    if (this.#score % 5) {
+      this.#enemiesInterval--;
+    }
+
+    this.#updateScoreText();
+  }
+  #updateScoreText() {
+    this.#htmlElements.score.textContent = `Score: ${this.#score}`;
+  }
+  #updateLivesText() {
+    this.#htmlElements.lives.textContent = `Lives: ${this.#lives}`;
   }
 }
 window.onload = function () {

@@ -14,6 +14,7 @@ body {
   background-color: black;
   position: relative;
   overflow: hidden;
+  transition: 0.5s;
 }
 
 .info {
@@ -70,6 +71,11 @@ body {
 
 .hide {
   display: none;
+}
+
+.hit {
+  transition: 0.5s;
+  background-color: rgb(126, 50, 110);
 }
 
 .spaceship {

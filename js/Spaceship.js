@@ -80,6 +80,5 @@ export class Spaceship {
     );
     missile.init();
     this.missiles.push(missile);
-    console.log(this.missiles);
   }
 }

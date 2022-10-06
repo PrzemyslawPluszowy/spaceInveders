@@ -39,11 +39,9 @@ export class Enemy {
     this.element.remove();
   }
   hit() {
-    console.log(this.lives);
     this.lives--;
     if (!this.lives) {
       this.explode();
-      console.log(this.lives);
     }
   }
   explode() {
